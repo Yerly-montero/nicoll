@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Umbrella - Immersive Experience</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Great+Vibes&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --glow-color: #6a0dad; /* Darker purple for glow */
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            min-height: 100dvh;
+            overflow: hidden;
+            position: relative;
+            text-align: center;
+            background-color: #000;
+        }
+
+        #background-video {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: translate(-50%, -50%);
+            z-index: -2;
+            opacity: 0.7; /* Adjust video opacity */
+            transition: opacity 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(44, 62, 80, 0.8) 0%, rgba(0, 0, 0, 0.8) 100%);
+            z-index: -1;
+            transition: background 1.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.5s ease-in-out;
+            animation: background-pan 25s linear infinite alternate;
+        }
+
+        @keyframes background-pan {
+            from { background-position: 0% 50%; }
+            to { background-position: 100% 50%; }
+        }
+
+        .bg-rain::before { background: linear-gradient(135deg, rgba(31, 39, 48, 0.8) 0%, rgba(13, 18, 24, 0.8) 100%); }
+        .bg-sunshine::before { background: linear-gradient(135deg, rgba(255, 215, 0, 0.8) 0%, rgba(248, 195, 0, 0.8) 100%); }
+        .bg-friendship::before { background: linear-gradient(135deg, rgba(137, 247, 254, 0.8) 0%, rgba(102, 166, 255, 0.8) 100%); }
+        .bg-forever::before { background: linear-gradient(135deg, rgba(255, 154, 158, 0.8) 0%, rgba(250, 208, 196, 0.8) 100%); animation: pulse-bg 2s infinite alternate, background-pan 25s linear infinite alternate; }
+        .bg-instrumental::before { background: linear-gradient(135deg, rgba(251, 194, 235, 0.8) 0%, rgba(166, 193, 238, 0.8) 100%); }
+        .bg-neutral::before { background: linear-gradient(135deg, rgba(44, 62, 80, 0.8) 0%, rgba(0, 0, 0, 0.8) 100%); }
+
+        @keyframes pulse-bg {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px 25px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            max-width: 90%;
+            width: 350px;
+            z-index: 10;
+            position: relative;
+            transition: box-shadow 0.5s ease;
+            margin: 10px;
+        }
+
+        h1 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            font-weight: normal;
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
+            line-height: 1.1;
+        }
+
+        #author-credit {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1em;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 15px;
+            margin-bottom: 15px;
+            transition: opacity 0.5s ease-in-out;
+            position: relative;
+            z-index: 999;
+        }
+
+        #lyrics-container {
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .lyric {
+            font-size: 1.8em;
+            font-weight: 600;
+            opacity: 0;
+            margin: 0;
+            padding: 5px 0;
+            line-height: 1.2;
+            transition: color 0.5s ease-in-out, text-shadow 0.5s ease;
+            text-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        @keyframes fadeIn-blur {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); filter: blur(5px); }
+            to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+
+        .animate-lyric { animation: fadeIn-blur 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+
+        .effect-sunshine { color: #ffd700; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 15px #ffd700; }
+        .effect-rain { color: #89f7fe; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 15px #89f7fe; }
+        .effect-friendship { color: #a7e6ff; }
+        .effect-forever { color: #ff8fab; text-shadow: 0 0 20px #ff8fab; }
+
+        #particle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .action-button {
+            color: white;
+            padding: 12px 30px;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            border-radius: 50px;
+            font-size: 1.3em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 999;
+            background: linear-gradient(45deg, rgba(106,13,173,0.8), rgba(169,114,233,0.8));
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), 0 0 20px var(--glow-color);
+            text-shadow: 0 0 5px rgba(255,255,255,0.5);
+        }
+        .action-button:hover, .action-button:active {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 30px var(--glow-color);
+            border-color: white;
+        }
+
+        #startButton {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+        }
+
+        #countdown {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Poppins', sans-serif;
+            font-size: 6em;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(106, 13, 173, 0.6);
+            z-index: 1000;
+            opacity: 0;
+            animation: countdownPulse 1s ease-in-out;
+        }
+
+        @keyframes countdownPulse {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        @keyframes fadeInButton {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        #replayButton {
+            margin-top: 15px;
+            --glow-color: #6a0dad;
+            background: linear-gradient(45deg, rgba(106,13,173,0.8), rgba(169,114,233,0.8));
+        }
+
+        #volume-notice {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.85);
+            color: #fff;
+            padding: 15px 20px;
+            border-radius: 15px;
+            font-size: 1.1em;
+            z-index: 998;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            opacity: 0;
+            animation: fadeInOut 4s forwards;
+            max-width: 80%;
+            text-align: center;
+        }
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+            20%, 80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+        
+        .emoji-float {
+            position: absolute;
+            font-size: 1.8em;
+            pointer-events: none;
+            opacity: 0;
+            animation: floatAndSway 6s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+            z-index: 1;
+        }
+
+        @keyframes floatAndSway {
+            0% { opacity: 0; transform: translateY(0) translateX(0) scale(0.5) rotate(0deg); }
+            25% { opacity: 1; transform: translateY(-50px) translateX(20px) scale(0.8) rotate(5deg); }
+            50% { opacity: 1; transform: translateY(-100px) translateX(-20px) scale(1) rotate(-5deg); }
+            75% { opacity: 1; transform: translateY(-150px) translateX(10px) scale(0.9) rotate(2deg); }
+            100% { opacity: 0; transform: translateY(-200px) translateX(0) scale(0.7); }
+        }
+        
+        .preload-floater, .instrumental-floater {
+            position: absolute;
+            font-size: 2em;
+            pointer-events: none;
+            opacity: 0;
+            animation: floatUpAndSway 8s ease-out forwards;
+            z-index: 1;
+        }
+        @keyframes floatUpAndSway {
+            0% { opacity: 0; transform: translateY(100vh) translateX(0) scale(0.6) rotate(0deg); }
+            20% { opacity: 1; transform: translateY(80vh) translateX(30px) scale(0.8) rotate(5deg); }
+            40% { opacity: 1; transform: translateY(60vh) translateX(-30px) scale(1) rotate(-5deg); }
+            60% { opacity: 1; transform: translateY(40vh) translateX(20px) scale(0.9) rotate(2deg); }
+            80% { opacity: 1; transform: translateY(20vh) translateX(-10px) scale(0.7) rotate(-3deg); }
+            100% { opacity: 0; transform: translateY(0) translateX(0) scale(0.5); }
+        }
+
+        .hidden { display: none !important; }
+
+        #progress-bar-container {
+            width: 80%;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-top: 20px;
+            overflow: hidden;
+            position: relative;
+            display: none;
+        }
+        #progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: #6a0dad;
+            border-radius: 3px;
+            transition: width 0.1s linear;
+        }
+
+        @media (max-width: 768px) and (orientation: portrait) {
+            .container {
+                padding: 15px 20px;
+                width: 85%;
+                max-width: 320px;
+                margin: 5px;
+            }
+            
+            h1 { 
+                font-size: 2.5em; 
+                margin-bottom: 10px;
+                line-height: 1;
+            }
+            
+            #author-credit { 
+                font-size: 0.9em; 
+                margin-top: 10px;
+                margin-bottom: 10px;
+            }
+            
+            .lyric { 
+                font-size: 1.6em; 
+                line-height: 1.1;
+                padding: 3px 0;
+            }
+            
+            .action-button { 
+                font-size: 1.2em; 
+                padding: 10px 25px; 
+            }
+            
+            #lyrics-container {
+                min-height: 100px;
+            }
+            
+            #volume-notice {
+                font-size: 1em;
+                padding: 12px 18px;
+                max-width: 85%;
+            }
+            
+            .emoji-float, .preload-floater, .instrumental-floater { 
+                font-size: 1.5em; 
+            }
+
+            #countdown {
+                font-size: 4em;
+            }
+        }
+
+        @media (max-width: 430px) and (orientation: portrait) {
+            .container {
+                width: 90%;
+                max-width: 300px;
+                padding: 12px 18px;
+            }
+            
+            h1 { 
+                font-size: 2.2em; 
+                margin-bottom: 8px;
+            }
+            
+            .lyric { 
+                font-size: 1.4em; 
+            }
+            
+            #author-credit { 
+                font-size: 0.85em; 
+            }
+            
+            .action-button { 
+                font-size: 1.1em; 
+                padding: 9px 22px; 
+            }
+            
+            #lyrics-container {
+                min-height: 90px;
+            }
+
+            #countdown {
+                font-size: 3.5em;
+            }
+        }
+
+        @media (max-width: 375px) and (orientation: portrait) {
+            .container {
+                width: 92%;
+            }
+            
+            h1 { 
+                font-size: 2em; 
+            }
+            
+            .lyric { 
+                font-size: 1.3em; 
+            }
+            
+            .action-button { 
+                font-size: 1em; 
+                padding: 8px 20px; 
+            }
+            
+            #countdown {
+                font-size: 3em;
+            }
+        }
+
+        @media (max-height: 500px) and (orientation: landscape) {
+            .container {
+                padding: 10px 15px;
+                width: 70%;
+                max-width: 400px;
+            }
+            
+            h1 { 
+                font-size: 2em; 
+                margin-bottom: 5px;
+            }
+            
+            .lyric { 
+                font-size: 1.4em; 
+            }
+            
+            #author-credit { 
+                font-size: 0.8em; 
+                margin-top: 8px;
+                margin-bottom: 8px;
+            }
+            
+            #lyrics-container {
+                min-height: 70px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-neutral">
+    <video id="background-video" preload="auto" muted playsinline autoplay loop>
+        <source src="https://github.com/DaniWo99/ipanema/raw/refs/heads/main/WhatsApp%20Video%202025-09-19%20at%2011.06.45%20AM.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="container">
+        <h1>Umbrella</h1>
+        <div id="lyrics-container">
+            <p id="current-lyric" class="lyric"></p>
+            <div id="progress-bar-container">
+                <div id="progress-bar-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <button id="startButton" class="action-button hidden">Start</button>
+    <button id="replayButton" class="action-button hidden">Play Again</button>
+
+    <div id="countdown" class="hidden"></div>
+    <p id="author-credit">By: Ember Island</p>
+
+    <div id="volume-notice" class="hidden">
+        🔊 Turn up the volume for the best experience! 🔊
+    </div>
+
+    <audio id="song">
+        <source src="https://github.com/DaniWo99/ipanema/raw/refs/heads/main/vDZmSh625h9Vu3ihQPGv+3lsDN6zBkUE.m4a" type="audio/mp4">
+        Your browser does not support the audio element.
+    </audio>
+
+    <canvas id="particle-canvas"></canvas>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const body = document.body;
+            const song = document.getElementById('song');
+            const video = document.getElementById('background-video');
+            const currentLyricElement = document.getElementById('current-lyric');
+            const particleCanvas = document.getElementById('particle-canvas');
+            const ctx = particleCanvas.getContext('2d');
+            const startButton = document.getElementById('startButton');
+            const volumeNotice = document.getElementById('volume-notice');
+            const progressBarContainer = document.getElementById('progress-bar-container');
+            const progressBarFill = document.getElementById('progress-bar-fill');
+            const replayButton = document.getElementById('replayButton');
+            const authorCredit = document.getElementById('author-credit');
+            const countdown = document.getElementById('countdown');
+
+            particleCanvas.width = window.innerWidth * window.devicePixelRatio;
+            particleCanvas.height = window.innerHeight * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            window.addEventListener('resize', () => {
+                particleCanvas.width = window.innerWidth * window.devicePixelRatio;
+                particleCanvas.height = window.innerHeight * window.devicePixelRatio;
+                ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            });
+
+            const lyricsData = [
+                { time: 2, text: "You have my heart", mood: "forever" },
+                { time: 5, text: "We'll never be worlds apart", mood: "forever" },
+                { time: 8, text: "May be in magazines", mood: "sunshine" },
+                { time: 11, text: "But you'll still be my star", mood: "sunshine" },
+                { time: 14, text: "Baby, 'cause in the dark", mood: "rain" },
+                { time: 17, text: "You can't see shiny cars", mood: "rain" },
+                { time: 20, text: "And that's when you need me there", mood: "friendship" },
+                { time: 23, text: "With you i'll always share", mood: "friendship" },
+                { time: 26, text: "Because", mood: "friendship" },
+                { time: 28, text: "When the sun shine, we shine together", mood: "sunshine" },
+                { time: 31, text: "Told you i'll be here forever", mood: "forever" },
+                { time: 34, text: "Said i'll always be your friend", mood: "friendship" },
+                { time: 37, text: "Took an oath and I'm stick it out till the end", mood: "forever" },
+                { time: 40, text: "Now that it's raining more than ever", mood: "rain" },
+                { time: 43, text: "Know that we still have each other", mood: "friendship" },
+                { time: 46, text: "You can stand under my umbrella", mood: "rain" },
+                { time: 49, text: "You can stand under my umbrella(Ella, ella, eh, eh, eh)", mood: "rain" },
+                { time: 56, text: "Under my umbrella(Ella, ella, eh, eh, eh)", mood: "rain" },
+                { time: 62, text: "Under my umbrella(Ella, ella, eh, eh, eh)", mood: "rain" },
+                { time: 68, text: "Under my umbrella(Ella, ella, eh, eh, eh)", mood: "rain" },
+                { time: 76, text: "These fancy things", mood: "sunshine" },
+                { time: 78, text: "Will never come in between", mood: "sunshine" },
+                { time: 81, text: "You're part of my entity", mood: "forever" },
+                { time: 84, text: "Here for infinity", mood: "forever" },
+                { time: 87, text: "When the war has took its part", mood: "rain" },
+                { time: 90, text: "When the world has dealt its cards", mood: "rain" },
+                { time: 93, text: "If the hand is hard", mood: "rain" },
+                { time: 96, text: "Together we'll mend your heart", mood: "friendship" },
+                { time: 99, text: "Because", mood: "friendship" },
+                { time: 101, text: "When the sun shine, we shine together", mood: "sunshine" },
+                { time: 104, text: "Told you i'll be here forever", mood: "forever" },
+                { time: 107, text: "Said i'll always be your friend", mood: "friendship" },
+                { time: 110, text: "Took an oath and I'm stick it out till the end", mood: "forever" },
+                { time: 113, text: "Now that it's raining more than ever", mood: "rain" },
+                { time: 116, text: "Know that we still have each other", mood: "friendship" },
+                { time: 119, text: "You can stand under my umbrella", mood: "rain" },
+                { time: 122, text: "You can stand under my umbrella(Ella, ella, ee)", mood: "rain" },
+                { time: 129, text: "Under my umbrella(Ella, ella, ooh yeeah)", mood: "rain" },
+                { time: 134, text: "You can stand under my umbrella(Ella, ella, eeh)", mood: "rain" },
+                { time: 141, text: "Under my umbrella(Ella, ella, eh, eh, eh)", mood: "rain" },
+                { time: 161, text: "Hmmm...", mood: "neutral" },
+                { time: 173, text: "It's raining", mood: "rain" },
+                { time: 175, text: "Ooh, baby it's raining", mood: "rain" },
+                { time: 177, text: "You can always come into me", mood: "friendship" },
+                { time: 182, text: "Come into me", mood: "friendship" },
+                { time: 185, text: "It's raining", mood: "rain" },
+                { time: 187, text: "Ooh, baby it's raining", mood: "rain" },
+                { time: 190, text: "You can always come into me", mood: "friendship" },
+                { time: 194, text: "Come into me", mood: "friendship" },
+                { time: 197, text: "It's raining", mood: "rain" },
+                { time: 199, text: "Ooh, baby it's raining", mood: "rain" },
+                { time: 202, text: "You can always come into me", mood: "friendship" },
+                { time: 206, text: "Come into me", mood: "friendship" },
+                { time: 209, text: "It's raining", mood: "rain" },
+                { time: 211, text: "Ooh, baby it's raining", mood: "rain" },
+                { time: 214, text: "You can always come into me", mood: "friendship" },
+                { time: 218, text: "Come into me", mood: "friendship" },
+            ];
+            
+            const initialDelay = 5;
+            let instrumentalStartTime = 141.0; 
+            let instrumentalEndTime = 173.0;
+            let isInInstrumentalSection = false;
+            let instrumentalFloaterInterval;
+
+            function showCountdown() {
+                let count = 3;
+                countdown.classList.remove('hidden');
+                
+                function updateCountdown() {
+                    if (count > 0) {
+                        countdown.textContent = count;
+                        countdown.style.animation = 'none';
+                        countdown.offsetHeight;
+                        countdown.style.animation = 'countdownPulse 1s ease-in-out';
+                        count--;
+                        setTimeout(updateCountdown, 1000);
+                    } else {
+                        countdown.classList.add('hidden');
+                        startButton.classList.remove('hidden');
+                        startButton.style.animation = 'fadeInButton 0.5s ease-out forwards';
+                    }
+                }
+                updateCountdown();
+            }
+
+            setTimeout(showCountdown, 500);
+
+            let particles = [];
+            class Particle {
+                constructor(x, y) {
+                    this.x = x;
+                    this.y = y;
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * 4 + 1;
+                    this.vx = Math.cos(angle) * speed;
+                    this.vy = Math.sin(angle) * speed;
+                    this.size = Math.random() * 3 + 1;
+                    this.alpha = 1;
+                    this.gravity = 0.05;
+                    this.color = `hsl(${Math.random() * 30 + 240}, 100%, ${Math.random() * 50 + 50}%)`; // Blue/Purple tones
+                }
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.vy += this.gravity;
+                    this.alpha -= 0.02;
+                }
+                draw() {
+                    ctx.save();
+                    ctx.globalAlpha = this.alpha;
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+
+            function createParticles(x, y) {
+                for (let i = 0; i < 40; i++) {
+                    particles.push(new Particle(x, y));
+                }
+            }
+
+            function animateParticles() {
+                ctx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    particles[i].update();
+                    particles[i].draw();
+                    if (particles[i].alpha <= 0) {
+                        particles.splice(i, 1);
+                    }
+                }
+                requestAnimationFrame(animateParticles);
+            }
+            animateParticles();
+
+            function createEmoji(emoji, numEmojis) {
+                for (let i = 0; i < numEmojis; i++) {
+                    const emojiElement = document.createElement('span');
+                    emojiElement.textContent = emoji;
+                    emojiElement.classList.add('emoji-float');
+                    emojiElement.style.left = `${Math.random() * 100}vw`;
+                    emojiElement.style.top = `${Math.random() * 100}vh`;
+                    emojiElement.style.animationDelay = `${Math.random() * 3}s`;
+                    body.appendChild(emojiElement);
+                    emojiElement.addEventListener('animationend', () => emojiElement.remove());
+                }
+            }
+
+            function createFloater(content, type, className) {
+                const heartColors = ['❤️', '🧡', '💛', '💚', '💙', '💜'];
+                const element = document.createElement('span');
+                if (type === 'heart') {
+                    element.textContent = heartColors[Math.floor(Math.random() * heartColors.length)];
+                } else {
+                    element.textContent = content;
+                }
+                element.classList.add(className);
+                element.style.left = `${Math.random() * 100}vw`;
+                element.style.animationDelay = `${Math.random() * 5}s`; 
+                body.appendChild(element);
+                element.addEventListener('animationend', () => element.remove());
+            }
+
+            function generateInstrumentalFloaters() {
+                createFloater('🎵', 'note', 'instrumental-floater');
+                createFloater('🎶', 'note', 'instrumental-floater');
+                if (Math.random() < 0.5) {
+                    createFloater('', 'heart', 'instrumental-floater');
+                }
+            }
+
+            function fadeInAudio() {
+                song.volume = 0;
+                let currentVolume = 0;
+                const fadeInterval = setInterval(() => {
+                    currentVolume += 0.05;
+                    if (currentVolume >= 1) {
+                        song.volume = 1;
+                        clearInterval(fadeInterval);
+                    } else {
+                        song.volume = currentVolume;
+                    }
+                }, 100);
+            }
+
+            function showVolumeNotice() {
+                volumeNotice.classList.remove('hidden');
+                setTimeout(() => volumeNotice.classList.add('hidden'), 4000);
+            }
+
+            function startSongAndAnimations() {
+                startButton.classList.add('hidden');
+                replayButton.classList.add('hidden');
+                authorCredit.classList.add('hidden');
+                showVolumeNotice();
+                song.currentTime = 0;
+                song.play().then(fadeInAudio).catch(console.error);
+            }
+
+            startButton.addEventListener('click', startSongAndAnimations);
+            replayButton.addEventListener('click', () => {
+                song.currentTime = 0;
+                song.play();
+                replayButton.classList.add('hidden');
+                body.className = 'bg-neutral';
+                currentLyricElement.textContent = '';
+                progressBarContainer.style.display = 'none';
+                authorCredit.classList.remove('hidden');
+            });
+
+            song.addEventListener('timeupdate', () => {
+                const currentTime = song.currentTime;
+                const duration = song.duration;
+
+                if (currentTime >= instrumentalStartTime && currentTime < instrumentalEndTime) {
+                    if (!isInInstrumentalSection) {
+                        isInInstrumentalSection = true;
+                        currentLyricElement.textContent = '🎶 Instrumental 🎶';
+                        body.className = 'bg-instrumental';
+                        progressBarContainer.style.display = 'block';
+                        instrumentalFloaterInterval = setInterval(generateInstrumentalFloaters, 300);
+                    }
+                    const instrumentalDuration = instrumentalEndTime - instrumentalStartTime;
+                    const progress = (currentTime - instrumentalStartTime) / instrumentalDuration * 100;
+                    progressBarFill.style.width = `${progress}%`;
+                } else {
+                    if (isInInstrumentalSection) {
+                        isInInstrumentalSection = false;
+                        clearInterval(instrumentalFloaterInterval);
+                        progressBarContainer.style.display = 'none';
+                    }
+
+                    let foundLyric = false;
+                    for (let i = 0; i < lyricsData.length; i++) {
+                        const lyric = lyricsData[i];
+                        const nextLyricTime = (i + 1 < lyricsData.length) ? lyricsData[i + 1].time : Infinity;
+                        if (currentTime >= lyric.time && currentTime < nextLyricTime) {
+                            if (currentLyricElement.textContent !== lyric.text) {
+                                currentLyricElement.className = 'lyric';
+                                void currentLyricElement.offsetWidth;
+                                
+                                currentLyricElement.textContent = lyric.text;
+                                
+                                body.className = `bg-${lyric.mood}`;
+                                currentLyricElement.classList.add(`effect-${lyric.mood}`);
+                                currentLyricElement.classList.add('animate-lyric');
+
+                                switch (lyric.mood) {
+                                    case 'rain': createEmoji('☔', 15); createEmoji('💧', 20); break; 
+                                    case 'sunshine': createEmoji('☀️', 20); createEmoji('✨', 15); break; 
+                                    case 'forever': createEmoji('💖', 25); createEmoji('❤️', 20); break; 
+                                    case 'friendship': createEmoji('🤝', 15); createEmoji('🫂', 15); break; 
+                                }
+                            }
+                            foundLyric = true;
+                            break;
+                        }
+                    }
+                    if (!foundLyric && currentLyricElement.textContent) {
+                        currentLyricElement.textContent = '';
+                        body.className = 'bg-neutral';
+                    }
+                }
+
+                if (currentTime >= duration && duration > 0) {
+                    replayButton.classList.remove('hidden');
+                    currentLyricElement.textContent = '';
+                    body.className = 'bg-neutral';
+                    progressBarContainer.style.display = 'none';
+                    authorCredit.classList.remove('hidden');
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.action-button')) return;
+                createParticles(e.clientX, e.clientY);
+            });
+
+            createFloater('☔', 'note', 'preload-floater');
+            createFloater('❤️', 'note', 'preload-floater');
+        });
+    </script>
+</body>
+</html>
